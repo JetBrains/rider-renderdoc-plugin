@@ -1,0 +1,42 @@
+<idea-plugin require-restart="true" >
+  <name>RenderDoc</name>
+  <id>org.jetbrains.plugins.renderdoc</id>
+  <vendor>JetBrains</vendor>
+  <description>Integration with RenderDoc tool for debugging and inspection.</description>
+
+  <resource-bundle>messages.RenderDocBundle</resource-bundle>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.rider"/>
+    <plugin id="com.intellij.platform.images"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <registryKey key="renderdoc.enabled" description="Shows if renderdoc plugin is enabled" defaultValue="true" restartRequired="true" />
+    <toolWindow factoryClass="com.jetbrains.rider.plugins.renderdoc.toolWindow.RenderDocToolWindowFactory" id="RenderDocTool" anchor="right" doNotActivateOnStart="true" />
+    <registryKey key="renderdoc.host.bin" description="Location of binary path for RenderDocHost" defaultValue="" restartRequired="true" />
+    <programRunner implementation="com.jetbrains.rider.plugins.renderdoc.execution.ShaderDebugRunner" />
+    <configurationType implementation="com.jetbrains.rider.plugins.renderdoc.execution.DebugVertexConfigurationType" />
+    <configurationType implementation="com.jetbrains.rider.plugins.renderdoc.execution.DebugPixelConfigurationType" />
+    <xdebugger.breakpointType implementation="com.jetbrains.rider.plugins.renderdoc.debugger.RenderDocLineBreakpointType"/>
+    <virtualFileSystem id="renderDocCapture" key="renderdoc" implementationClass="com.jetbrains.rider.plugins.renderdoc.vfs.RenderDocCaptureFileSystem" />
+    <rd.solutionExtListener endpoint="IDE Frontend"
+                            listener="com.jetbrains.rider.plugins.renderdoc.backend.FrontendBackendHost$ProtocolListener"/>
+    <notificationGroup id="RenderDoc" displayType="BALLOON" bundle="messages.RenderDocBundle" key="notification.group.general"/>
+  </extensions>
+
+  <actions>
+    <action id="OpenRenderDocCapture" class="com.jetbrains.rider.plugins.renderdoc.toolWindow.actions.OpenCaptureAction"/>
+
+    <group id="RenderDocActions.Toolbar">
+      <action id="DebugVertexAction" class="com.jetbrains.rider.plugins.renderdoc.toolWindow.actions.DebugVertexAction"
+              icon="com.intellij.rider.plugins.renderdoc.icons.RiderPluginsRenderdocIcons.DebugVertex"/>
+      <action id="DebugPixelAction" class="com.jetbrains.rider.plugins.renderdoc.toolWindow.actions.DebugPixelAction"
+              icon="com.intellij.rider.plugins.renderdoc.icons.RiderPluginsRenderdocIcons.DebugPixel"/>
+    </group>
+  </actions>
+
+  <projectListeners>
+    <listener topic="com.intellij.xdebugger.XDebuggerManagerListener" class="com.jetbrains.rider.plugins.renderdoc.debugger.RenderDocSessionSwitchListener"/>
+  </projectListeners>
+</idea-plugin>
